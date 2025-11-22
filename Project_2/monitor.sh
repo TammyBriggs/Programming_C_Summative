@@ -82,15 +82,21 @@ set_thresholds() {
     read -p "Enter new Memory Threshold (%): " new_mem
     read -p "Enter new Disk Threshold (%): " new_disk
 
-    # Basic validation to ensure inputs are numbers
-    if [[ "$new_cpu" =~ ^[0-9]+$ ]] && [[ "$new_mem" =~ ^[0-9]+$ ]] && [[ "$new_disk" =~ ^[0-9]+$ ]]; then
+    # Helper function to validate input is a number between 0 and 100
+    is_valid() {
+        # 1. Check if input is digits only (^[0-9]+$)
+        # 2. Check if input is less than or equal to 100
+        [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -le 100 ]
+    }
+
+    if is_valid "$new_cpu" && is_valid "$new_mem" && is_valid "$new_disk"; then
         CPU_THRESHOLD=$new_cpu
         MEM_THRESHOLD=$new_mem
         DISK_THRESHOLD=$new_disk
         echo "Thresholds updated successfully."
         log_message "NOTICE: User updated thresholds to CPU:$new_cpu, MEM:$new_mem, DISK:$new_disk"
     else
-        echo "Error: Invalid input. Please enter numeric values."
+        echo -e "\033[1;31mError: Invalid input. Values must be integers between 0 and 100.\033[0m"
     fi
 }
 
