@@ -17,7 +17,7 @@ A smart traffic intersection simulation that adjusts signal timing dynamically b
 * **Memory Management:** Uses `malloc` and `realloc` to dynamically log vehicle timestamps.
 * **Concurrency:** Non-blocking design using `millis()` allows simultaneous sensor reading and light control.
 
-**📂 File:** `Project1_Smart_Traffic/traffic_control.ino`  
+**📂 File:** `Project_1/traffic_control.ino`  
 **🔗 Live Simulation:** [PASTE YOUR TINKERCAD LINK HERE]
 
 ---
@@ -33,7 +33,7 @@ A robust shell script for monitoring server health (CPU, Memory, Disk).
 
 **How to Run:**
 ```bash
-cd Project2_System_Monitor
+cd Project_2
 chmod +x monitor.sh
 ./monitor.sh
 ```
@@ -53,7 +53,7 @@ A full-featured database application for managing student records.
 
 **How to Compile & Run:**
 ```bash
-cd Project3_Student_Management
+cd Project_3
 gcc main.c student_ops.c analytics.c -o student_sys
 ./student_sys
 ```
@@ -72,7 +72,7 @@ A data processing engine that selects operations at runtime.
 
 **How to Compile & Run:**
 ```bash
-cd Project4_Math_Engine
+cd Project_4
 gcc main.c math_utils.c -o math_engine
 ./math_engine
 ```
@@ -96,7 +96,7 @@ sudo apt-get install libcurl4-openssl-dev
 
 **How to Compile & Run:**
 ```bash
-cd Project5_Web_Scraper
+cd Project_5
 gcc scraper.c -o scraper -lcurl -lpthread
 ./scraper
 ```
