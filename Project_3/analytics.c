@@ -54,3 +54,29 @@ void print_top_student(Student *students, int count) {
     }
     printf("Top Performer: %s (GPA: %.2f)\n", students[top_index].name, students[top_index].gpa);
 }
+
+void print_top_student_by_course(Student *students, int count) {
+    char target_course[MAX_NAME];
+    printf("Enter Course Name to analyze: ");
+    scanf(" %[^\n]s", target_course);
+
+    int best_index = -1;
+    float max_gpa = -1.0;
+
+    for (int i = 0; i < count; i++) {
+        // Compare strings
+        if (strcmp(students[i].course, target_course) == 0) {
+            if (students[i].gpa > max_gpa) {
+                max_gpa = students[i].gpa;
+                best_index = i;
+            }
+        }
+    }
+
+    if (best_index != -1) {
+        printf("Top Student in %s: %s (GPA: %.2f)\n", 
+               target_course, students[best_index].name, students[best_index].gpa);
+    } else {
+        printf("No students found in course: %s\n", target_course);
+    }
+}
