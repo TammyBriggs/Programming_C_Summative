@@ -18,7 +18,7 @@ A smart traffic intersection simulation that adjusts signal timing dynamically b
 * **Concurrency:** Non-blocking design using `millis()` allows simultaneous sensor reading and light control.
 
 **📂 File:** `Project_1/traffic_control.ino`  
-**🔗 Live Simulation:** [PASTE YOUR TINKERCAD LINK HERE]
+**🔗 Live Simulation:** [[HERE](https://www.tinkercad.com/things/0H9FGyOkKjc-smart-traffic-control-and-monitoring-system)]
 
 ---
 
