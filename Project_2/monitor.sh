@@ -3,7 +3,6 @@
 # ===================================================================
 # Project 2: Automated System Monitoring Shell Script
 # Description: Monitors CPU, Memory, and Disk usage with alerts and logging.
-# Author: [Your Name]
 # ===================================================================
 
 # Default Thresholds (Percentages)
@@ -14,79 +13,72 @@ DISK_THRESHOLD=90
 # Log File Location
 LOG_FILE="system_monitor.log"
 
-# Function to get current timestamp
 get_timestamp() {
     date "+%Y-%m-%d %H:%M:%S"
 }
 
-# Function: Log Messages
-# Appends messages to the log file with a timestamp
 log_message() {
     local message="$1"
     echo "$(get_timestamp) - $message" >> "$LOG_FILE"
 }
 
-# Function: Check System Metrics
 monitor_system() {
-    echo "---------------------------------"
-    echo "Running System Scan..."
-    
-    # 1. CPU Usage calculation (using top in batch mode)
-    # We grep the "Cpu(s)" line, take the idle time ($8 usually), and subtract from 100.
+    # 1. CPU Usage
     CPU_IDLE=$(top -bn1 | grep "Cpu(s)" | awk '{print $8}' | cut -d. -f1)
     CPU_USAGE=$(( 100 - CPU_IDLE ))
 
-    # 2. Memory Usage calculation (using free)
+    # 2. Memory Usage
     MEM_TOTAL=$(free -m | grep Mem | awk '{print $2}')
     MEM_USED=$(free -m | grep Mem | awk '{print $3}')
     MEM_PERCENT=$(( 100 * MEM_USED / MEM_TOTAL ))
 
-    # 3. Disk Usage calculation (using df for root /)
+    # 3. Disk Usage
     DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
 
-    # Display Stats
-    echo "CPU Usage: $CPU_USAGE%"
-    echo "Memory Usage: $MEM_PERCENT%"
-    echo "Disk Usage: $DISK_USAGE%"
+    echo "--- System Status at $(get_timestamp) ---"
+    echo "CPU: $CPU_USAGE% | Mem: $MEM_PERCENT% | Disk: $DISK_USAGE%"
 
-    # Check Thresholds and Log Warnings
+    # Check Thresholds
     if [ "$CPU_USAGE" -ge "$CPU_THRESHOLD" ]; then
         MSG="ALERT: High CPU Usage detected: $CPU_USAGE%"
-        echo -e "\033[1;31m$MSG\033[0m" # Red text
+        echo -e "\033[1;31m$MSG\033[0m"
         log_message "$MSG"
-    else
-        log_message "INFO: CPU Usage normal: $CPU_USAGE%"
     fi
 
     if [ "$MEM_PERCENT" -ge "$MEM_THRESHOLD" ]; then
         MSG="ALERT: High Memory Usage detected: $MEM_PERCENT%"
         echo -e "\033[1;31m$MSG\033[0m"
         log_message "$MSG"
-    else
-        log_message "INFO: Memory Usage normal: $MEM_PERCENT%"
     fi
 
     if [ "$DISK_USAGE" -ge "$DISK_THRESHOLD" ]; then
         MSG="ALERT: High Disk Usage detected: $DISK_USAGE%"
         echo -e "\033[1;31m$MSG\033[0m"
         log_message "$MSG"
-    else
-        log_message "INFO: Disk Usage normal: $DISK_USAGE%"
     fi
-    echo "---------------------------------"
 }
 
-# Function: Update Thresholds
+# === Function: Periodic Execution ===
+run_periodic_mode() {
+    echo "Starting Periodic Monitoring (Ctrl+C to stop)..."
+    log_message "NOTICE: Periodic monitoring started."
+    while true; do
+        monitor_system
+        sleep 10 # Runs every 10 seconds
+    done
+}
+
 set_thresholds() {
     read -p "Enter new CPU Threshold (%): " new_cpu
     read -p "Enter new Memory Threshold (%): " new_mem
     read -p "Enter new Disk Threshold (%): " new_disk
 
-    # Helper function to validate input is a number between 0 and 100
+    # Updated Validation: Checks for Empty AND Number range 0-100
     is_valid() {
-        # 1. Check if input is digits only (^[0-9]+$)
-        # 2. Check if input is less than or equal to 100
-        [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -le 100 ]
+        if [[ -z "$1" ]]; then return 1; fi # Check if empty
+        if ! [[ "$1" =~ ^[0-9]+$ ]]; then return 1; fi # Check if number
+        if [ "$1" -lt 0 ] || [ "$1" -gt 100 ]; then return 1; fi # Check range
+        return 0
     }
 
     if is_valid "$new_cpu" && is_valid "$new_mem" && is_valid "$new_disk"; then
@@ -94,49 +86,51 @@ set_thresholds() {
         MEM_THRESHOLD=$new_mem
         DISK_THRESHOLD=$new_disk
         echo "Thresholds updated successfully."
-        log_message "NOTICE: User updated thresholds to CPU:$new_cpu, MEM:$new_mem, DISK:$new_disk"
+        log_message "NOTICE: Updated thresholds - CPU:$new_cpu MEM:$new_mem DISK:$new_disk"
     else
-        echo -e "\033[1;31mError: Invalid input. Values must be integers between 0 and 100.\033[0m"
+        echo -e "\033[1;31mError: Inputs must be numbers between 0 and 100 and cannot be empty.\033[0m"
     fi
 }
 
-# Function: View Logs
 view_logs() {
     if [ -f "$LOG_FILE" ]; then
-        echo "Displaying last 20 lines of log file:"
+        echo "Last 20 log entries:"
         tail -n 20 "$LOG_FILE"
     else
-        echo "No log file found yet."
+        echo "No log file found."
     fi
 }
 
-# Function: Clear Logs
 clear_logs() {
     > "$LOG_FILE"
     echo "Logs cleared."
-    log_message "NOTICE: Log file cleared by user."
 }
 
-# Main Menu Loop
+# Main Menu
 while true; do
     echo ""
-    echo "=== AUTOMATED SYSTEM MONITORING MENU ==="
-    echo "1. Run System Monitor (Scan Now)"
-    echo "2. Set Alert Thresholds"
-    echo "3. View Logs"
-    echo "4. Clear Logs"
-    echo "5. Exit"
-    read -p "Select an option [1-5]: " choice
+    echo "=== SYSTEM MONITOR ==="
+    echo "1. Run Scan Once"
+    echo "2. Start Periodic Monitor (Every 10s)"
+    echo "3. Set Alert Thresholds"
+    echo "4. View Logs"
+    echo "5. Clear Logs"
+    echo "6. Exit"
+    read -p "Select [1-6]: " choice
 
     case $choice in
         1) monitor_system ;;
-        2) set_thresholds ;;
-        3) view_logs ;;
-        4) clear_logs ;;
-        5) echo "Exiting Monitor. Goodbye!"; exit 0 ;;
-        *) echo "Invalid option. Please try again." ;;
+        2) run_periodic_mode ;;
+        3) set_thresholds ;;
+        4) view_logs ;;
+        5) clear_logs ;;
+        6) 
+            echo "Exiting Monitor. Goodbye!"
+            exit 0 
+            ;;
+        *) echo "Invalid option." ;;
     esac
-    
-    # Small pause for readability
-    sleep 1
+
+    echo ""
+    read -p "Press Enter to continue..." 
 done

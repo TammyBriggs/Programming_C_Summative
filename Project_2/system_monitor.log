@@ -1,1 +1,4 @@
-2025-11-22 21:29:20 - NOTICE: Log file cleared by user.
+2025-11-23 18:27:51 - NOTICE: Periodic monitoring started.
+2025-11-23 18:28:37 - NOTICE: Updated thresholds - CPU:10 MEM:10 DISK:10
+2025-11-23 18:28:46 - ALERT: High Memory Usage detected: 44%
+2025-11-23 18:28:46 - ALERT: High Disk Usage detected: 17%
