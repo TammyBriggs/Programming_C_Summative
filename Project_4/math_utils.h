@@ -24,4 +24,8 @@ float op_min(float *data, int size);
 // Sorting (Void because it modifies the array in place, doesn't return a single value)
 void sort_data(float *data, int size, int ascending);
 
+int search_value(float *data, int size, float target);
+void delete_element(float **data, int *size, int index);
+void modify_element(float *data, int size, int index, float new_val);
+
 #endif

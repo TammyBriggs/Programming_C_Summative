@@ -111,3 +111,37 @@ void sort_data(float *data, int size, int ascending) {
     }
     printf("Data sorted %s.\n", ascending ? "Ascending" : "Descending");
 }
+
+int search_value(float *data, int size, float target) {
+    for (int i = 0; i < size; i++) {
+        if (data[i] == target) return i; // Return index
+    }
+    return -1; // Not found
+}
+
+void delete_element(float **data, int *size, int index) {
+    if (index < 0 || index >= *size) {
+        printf("Invalid index.\n");
+        return;
+    }
+    // Shift elements left
+    for (int i = index; i < *size - 1; i++) {
+        (*data)[i] = (*data)[i + 1];
+    }
+    (*size)--;
+    // Realloc to shrink memory
+    float *temp = realloc(*data, *size * sizeof(float));
+    if (*size > 0 && temp != NULL) {
+        *data = temp;
+    }
+    printf("Element deleted.\n");
+}
+
+void modify_element(float *data, int size, int index, float new_val) {
+    if (index < 0 || index >= size) {
+        printf("Invalid index.\n");
+        return;
+    }
+    data[index] = new_val;
+    printf("Element updated.\n");
+}

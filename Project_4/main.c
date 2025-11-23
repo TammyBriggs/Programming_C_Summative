@@ -7,7 +7,7 @@ int main() {
     int choice;
     char filename[50];
 
-    // Array of Function Pointers for operations 1-4
+    // Array of Function Pointers for operations 1-4 (Sum, Avg, Max, Min)
     // This satisfies the "Dynamic Function Dispatch" requirement
     MathOperation operations[] = {op_sum, op_average, op_max, op_min};
     const char *op_names[] = {"Sum", "Average", "Max", "Min"};
@@ -22,9 +22,12 @@ int main() {
         printf("6. Find Min\n");
         printf("7. Sort Data (Ascending)\n");
         printf("8. Sort Data (Descending)\n");
-        printf("9. Save to File\n");
-        printf("10. Load from File\n");
-        printf("11. Exit\n");
+        printf("9. Search for Value\n");       // NEW
+        printf("10. Delete Value by Index\n"); // NEW
+        printf("11. Modify Value by Index\n"); // NEW
+        printf("12. Save to File\n");
+        printf("13. Load from File\n");
+        printf("14. Exit\n");
         printf("Enter choice: ");
         
         if (scanf("%d", &choice) != 1) {
@@ -34,14 +37,7 @@ int main() {
             continue;
         }
 
-        // Handle Exit
-        if (choice == 11) {
-            if (dataset) free(dataset); // SAFETY: Free memory before exit
-            printf("Exiting...\n");
-            break;
-        }
-
-        // Handle Adding Data (realloc)
+        // Handle Adding Data (Option 1)
         if (choice == 1) {
             float val;
             printf("Enter value: ");
@@ -60,7 +56,7 @@ int main() {
             continue;
         }
 
-        // Handle View
+        // Handle View (Option 2)
         if (choice == 2) {
             print_data(dataset, size);
             continue;
@@ -82,7 +78,7 @@ int main() {
             continue;
         }
 
-        // Handle Sorting
+        // Handle Sorting (Option 7 & 8)
         if (choice == 7 || choice == 8) {
             if (size == 0) {
                 printf("Dataset is empty.\n");
@@ -92,15 +88,57 @@ int main() {
             continue;
         }
 
-        // Handle File I/O
+        // Handle Search (Option 9)
         if (choice == 9) {
+            if (size == 0) { printf("Dataset is empty.\n"); continue; }
+            float target;
+            printf("Enter value to search: ");
+            scanf("%f", &target);
+            int idx = search_value(dataset, size, target);
+            if (idx != -1) printf("Value %.2f found at index %d.\n", target, idx);
+            else printf("Value %.2f not found in dataset.\n", target);
+            continue;
+        }
+
+        // Handle Delete (Option 10)
+        if (choice == 10) {
+            if (size == 0) { printf("Dataset is empty.\n"); continue; }
+            int idx;
+            printf("Enter index to delete (0 to %d): ", size - 1);
+            scanf("%d", &idx);
+            delete_element(&dataset, &size, idx);
+            continue;
+        }
+
+        // Handle Modify (Option 11)
+        if (choice == 11) {
+            if (size == 0) { printf("Dataset is empty.\n"); continue; }
+            int idx;
+            float val;
+            printf("Enter index to modify (0 to %d): ", size - 1);
+            scanf("%d", &idx);
+            printf("Enter new value: ");
+            scanf("%f", &val);
+            modify_element(dataset, size, idx, val);
+            continue;
+        }
+
+        // Handle File I/O (Option 12 & 13)
+        if (choice == 12) {
             printf("Enter filename to save: ");
             scanf("%s", filename);
             save_to_file(dataset, size, filename);
-        } else if (choice == 10) {
+        } else if (choice == 13) {
             printf("Enter filename to load: ");
             scanf("%s", filename);
             load_from_file(&dataset, &size, filename);
+        }
+
+        // Handle Exit (Option 14)
+        if (choice == 14) {
+            if (dataset) free(dataset); // SAFETY: Free memory before exit
+            printf("Exiting...\n");
+            break;
         }
     }
 
