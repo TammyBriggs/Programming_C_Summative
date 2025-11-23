@@ -1,6 +1,5 @@
 # Programming in C Summative Assessment
-
-**Student Name:** Tamunotonye Briggs  
+ 
 **Video Presentation:** [Link to your video here]
 
 ## Overview
